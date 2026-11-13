@@ -21,20 +21,20 @@ function mostrar(d,novo){const outro=!ATUAL||!d||ATUAL.nome!==d.nome;ATUAL=d||nu
   $('nome').textContent=d.nome+' — Lv'+v.lv+' '+CL(CS).nome;$('moedas').innerHTML='💰 <b>'+fmt(d.coins||0)+'</b> '+t('moedas');
   $('stats').innerHTML='<div>⚔️<b>'+num(s.atk)+'</b>'+t('atk')+'</div><div>🛡️<b>'+num(s.def)+'</b>'+t('def')+'</div><div>❤️<b>'+Math.round(s.hp)+'</b>'+t('vida')+'</div>';
   const capa=e.capacete||{slot:'capacete',classe:CS,tema:e.armadura?e.armadura.tema:'madeira',tier:e.armadura?e.armadura.tier:1};
-  for(const[sl,it,nm]of[['arma',e.arma,e.arma&&e.arma.nome],['armadura',e.armadura,e.armadura&&e.armadura.nome],['capacete',capa,capa.nome||nomeCobertura(CS,TEMAS[capa.tema]||TEMAS.madeira)]]){icone($('s-'+sl),it,0);$('n-'+sl).textContent=nm||'—'}
+  for(const[sl,it,nm]of[['arma',e.arma,e.arma&&e.arma.nome],['armadura',e.armadura,e.armadura&&e.armadura.nome],['capacete',capa,capa.nome||nomeCobertura(CS,TEMAS[capa.tema]||TEMAS.madeira)]]){icone($('s-'+sl),it,0);$('n-'+sl).textContent=nm?NI(nm):'—'}
   PD={d:v,eq:e,h,sw:0,mv:0,cast:0};
   const inv=[...new Set([e.arma,e.armadura,e.capacete,...inventarioDe(v)].filter(Boolean))].filter(it=>!it.classe||it.classe===CS).sort((a,b)=>(a.slot>b.slot?1:-1)||(a.num||0)-(b.num||0)),g=$('grid');g.innerHTML='';
   inv.forEach(it=>g.appendChild(card(it,it===e.arma||it===e.armadura||it===e.capacete,'')));
   loja()}
 function atrib(it){return(it.atk?'⚔️'+fmt(it.atk)+' ':'')+(it.def?'🛡️'+fmt(it.def)+' ':'')+(it.hp?'❤️'+fmt(it.hp):'')}
 function card(it,eq,extra){const b=document.createElement('div');b.className='it'+(eq?' eq':'');const k=document.createElement('canvas');b.appendChild(k);const n=document.createElement('div'),c=codigo(it);
-  n.innerHTML='<b>'+it.nome+(eq?' ✔':'')+'</b><br><small>'+CL(it.classe).icone+' '+CL(it.classe).nome+' · '+atrib(it)+'<br>'+(c?'<code>!'+c+'</code>':(it.slot==='extra'?'':t('padrao')))+(extra||'')+'</small>';
+  n.innerHTML='<b>'+NI(it.nome)+(eq?' ✔':'')+'</b><br><small>'+CL(it.classe).icone+' '+CL(it.classe).nome+' · '+atrib(it)+'<br>'+(c?'<code>!'+c+'</code>':(it.slot==='extra'?'':t('padrao')))+(extra||'')+'</small>';
   b.appendChild(n);icone(k,it,0);return b}
 function loja(){abas($('ltabs'),LC,c=>{LC=c;loja()},null);const g=$('lg');g.innerHTML='';
   const tem=new Set(ATUAL?ATUAL.itens:[]);
   for(const[sl,tt,pre]of[['arma',t('armas'),'bw'],['armadura',t('armaduras'),'ba'],['capacete',t('capacetes'),'bh']]){const h=document.createElement('h3');h.textContent=tt;g.appendChild(h);const gr=document.createElement('div');gr.className='grid';gr.id='lg-'+sl;gr.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px';
     ITENS.filter(i=>i.loja&&i.classe===LC&&i.slot===sl).sort((a,b)=>a.preco-b.preco).forEach(it=>{const t=tem.has(it.id),cd=document.createElement('div');cd.className='it'+(t?' tem':'');const k=document.createElement('canvas');cd.appendChild(k);const n=document.createElement('div');
-      n.innerHTML='<b>'+it.nome+'</b><br><small>'+atrib(it)+'<br><span class="preco">💰 '+fmt(it.preco)+'</span><br>'+(t?t('tem'):'<code>!'+pre+it.num+'</code>')+'</small>';cd.appendChild(n);gr.appendChild(cd);icone(k,it,0)});g.appendChild(gr)}}
+      n.innerHTML='<b>'+NI(it.nome)+'</b><br><small>'+atrib(it)+'<br><span class="preco">💰 '+fmt(it.preco)+'</span><br>'+(t?t('tem'):'<code>!'+pre+it.num+'</code>')+'</small>';cd.appendChild(n);gr.appendChild(cd);icone(k,it,0)});g.appendChild(gr)}}
 function rota(manter){const n=decodeURIComponent(location.hash.slice(1));const d=n&&achar(n);mostrar(d,!manter);if(d)$('busca').value='';lista($('busca').value)}
 $('busca').oninput=()=>{if(location.hash)history.replaceState(null,'',location.pathname);mostrar(null);lista($('busca').value)};
 addEventListener('hashchange',()=>rota(false));
