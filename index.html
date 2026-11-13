@@ -45,6 +45,12 @@ h1 a{color:inherit;text-decoration:none}.pg{display:none}.pg.on{display:block}
 .breve{text-align:center;padding:36px 12px}.breve .ic{font-size:56px}.breve p{opacity:.75;max-width:420px;margin:10px auto 0}
 #rk{list-style:none;margin:0;padding:0}#rk li{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:6px 0;border:2px solid var(--bd);border-radius:12px;background:var(--btn);cursor:pointer}#rk li:hover{border-color:var(--ac)}#rk .pos{width:34px;text-align:center;font-weight:bold;font-size:18px}#rk .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#rk .vl{font-weight:bold;color:#b45309}@media (prefers-color-scheme:dark){#rk .vl{color:#fbbf24}}#rk li:nth-child(-n+3){background:linear-gradient(90deg,rgba(234,179,8,.2),transparent)}
 .nada{opacity:.7;font-size:14px}.rod{opacity:.6;font-size:12px;margin-top:16px;text-align:center}
+.xp{max-width:240px;margin:2px auto 8px;text-align:center}.xp .bar{height:12px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--bd);overflow:hidden}.xp .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:999px;transition:width .4s}.xp small{font-size:12px;opacity:.8}
+.lt{margin-bottom:10px}.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.ctabs .tab{flex:1 1 auto}.tab.on{border-color:var(--ac);background:rgba(245,158,11,.18)}
+.sec{display:none}.sec.on{display:block}.sec h3{margin:14px 0 6px}.sec h3:first-child{margin-top:0}.sec ul{padding-left:20px;margin:6px 0}.sec li{margin:7px 0;line-height:1.45}
+.cls{border:2px solid var(--bd);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--btn)}.cls h3{margin:0 0 4px}.cls p{margin:4px 0;line-height:1.45}.cls .tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:rgba(245,158,11,.22);margin-right:4px}
+table.cmd{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0}table.cmd td{border-top:1px solid var(--bd);padding:7px 6px;vertical-align:top}table.cmd td:first-child{white-space:nowrap}
+.aviso{border-left:4px solid var(--ac);background:rgba(245,158,11,.12);padding:8px 12px;border-radius:6px;margin:10px 0;line-height:1.45}
 </style></head><body>
 <div id="idioma"><button class="chip" data-l="pt">🇧🇷 Português</button><button class="chip" data-l="en">🇺🇸 English</button></div>
 <h1><a href="#/" data-i="titulo">⚔️ Heróis da Live</a></h1>
@@ -53,35 +59,37 @@ h1 a{color:inherit;text-decoration:none}.pg{display:none}.pg.on{display:block}
 <input id="busca" data-ip="busca" placeholder="🔎 Digite seu nome de jogador..." autocomplete="off" autofocus>
 <div class="painel" id="lista" style="display:none"><h2 id="lt">🔎</h2><div id="res"></div></div>
 <div class="painel" id="vista">
- <div id="ui"><div class="tabs" id="tabs"></div><h2 id="nome">—</h2><div class="moedas" id="moedas"></div><canvas id="doll" width="240" height="250"></canvas><div id="stats"></div>
+ <div id="ui"><div class="tabs" id="tabs"></div><h2 id="nome">—</h2><div class="xp" id="xp"><div class="bar"><i id="xpb"></i></div><small id="xpt"></small></div><div class="moedas" id="moedas"></div><canvas id="doll" width="240" height="250"></canvas><div id="stats"></div>
   <div class="slots"><div class="slot"><canvas id="s-arma"></canvas><span id="n-arma"></span></div><div class="slot"><canvas id="s-armadura"></canvas><span id="n-armadura"></span></div><div class="slot"><canvas id="s-capacete"></canvas><span id="n-capacete"></span></div></div></div>
  <div id="inv"><h3 data-i="inv">🎒 Inventário</h3><div id="grid"></div></div>
 </div>
 </div>
 <div id="pg-loja" class="pg"><a class="voltar" href="#/" data-i="voltar">← Início</a>
+<div class="tabs lt" id="lojatabs"></div>
+<div id="loja-coins">
 <div class="painel" id="loja"><h2 data-i="lojaT">🛒 Loja</h2><p class="sub" data-i="lojaP" style="margin:0 0 8px">Ganhe moedas derrotando monstros (1 por slime, 3 por goblin, 100 por chefe — para todos da partida, até os caídos). Compre pelo chat com o código do item e depois equipe.</p><div class="tabs" id="ltabs"></div><div id="lg"></div></div>
+</div>
+<div id="loja-tiktok" style="display:none"><div class="painel breve"><div class="ic">🎁</div><h2 data-i="lk_t">Loja de TikTok Coins</h2><p data-i="lk_p">Em breve!</p></div></div>
 </div>
 <div id="pg-ranking" class="pg"><a class="voltar" href="#/" data-i="voltar">← Início</a>
 <div class="painel"><h2 data-i="t_rank">Ranking</h2><div class="tabs" id="rtabs"></div><ol id="rk"></ol></div></div>
 <div id="pg-drops" class="pg"><a class="voltar" href="#/" data-i="voltar">← Início</a>
 <div class="painel breve"><div class="ic">💎</div><h2 data-i="t_drops">Drops</h2><p data-i="breveMsg">Em breve.</p></div></div>
 <div id="pg-como" class="pg"><a class="voltar" href="#/" data-i="voltar">← Início</a>
-<div class="painel ajuda"><h2 data-i="ajT">🎮 Como jogar e equipar</h2>
-<ul>
-<li data-ih="aj1">No chat da live digite <code>sw</code> guerreiro, <code>st</code> tank, <code>sm</code> mago ou <code>sh</code> healer para entrar na partida. Digite <code>1</code> para usar sua habilidade.</li>
-<li data-ih="aj2">Cada item tem um <b>código</b> (ex.: <code>!ew45</code>). Mande esse código no chat para equipar: <code>!ew</code> = arma, <code>!ea</code> = armadura, <code>!eh</code> = capacete.</li>
-<li data-ih="aj3"><b>Loja:</b> com moedas, compre pelo chat: <code>!bw51</code> compra a arma 51, <code>!ba</code> armadura e <code>!bh</code> capacete. Depois use <code>!ew51</code> (ou <code>!ea</code>/<code>!eh</code>) para equipar.</li>
-<li data-ih="aj4">Cada classe tem o seu próprio nível: se você jogar de healer só o healer evolui. Escolha a classe pelo ícone no topo do personagem.</li>
-<li data-ih="aj5"><b>Passivas:</b> guerreiro e mago causam +20% de dano; o tank recebe 50% menos dano e os monstros atacam os tanks primeiro; o healer tem 10% menos de recarga na habilidade.</li>
-<li data-ih="aj6">Para voltar ao automático (o mais forte), use <code>!ew0</code>, <code>!ea0</code> ou <code>!eh0</code>.</li>
-<li data-ih="aj7">Só dá para equipar na <b>espera entre as partidas</b> ou quando seu personagem estiver <b>morto</b>.</li>
-<li data-ih="aj8">Item de outra classe não pode ser equipado — a classe de cada item aparece no card.</li>
-<li data-ih="aj9">Seu personagem é ligado ao seu perfil do TikTok: mesmo trocando o apelido, ele continua seu.</li>
-</ul></div>
+<h2 data-i="ajT">🎮 Como jogar</h2><div class="ctabs" id="ctabs"></div>
+<div class="painel ajuda sec" id="sec-geral"><h3 data-i="cs_geral">Informações gerais</h3><ul>
+<li data-ih="g1"></li><li data-ih="g2"></li><li data-ih="g3"></li><li data-ih="g4"></li><li data-ih="g5"></li><li data-ih="g6"></li><li data-ih="g7"></li><li data-ih="g8"></li></ul></div>
+<div class="painel ajuda sec" id="sec-classes"><h3 data-i="cs_classes">Classes</h3><p class="nada" data-ih="cl_intro"></p><div id="cls"></div></div>
+<div class="painel ajuda sec" id="sec-comandos"><h3 data-i="cs_comandos">Comandos</h3><p data-ih="cm_intro"></p><table class="cmd" id="cmdt"></table><div class="aviso" data-ih="cm_aviso"></div></div>
+<div class="painel ajuda sec" id="sec-equipar"><h3 data-i="cs_equipar">Equipar itens</h3><ul>
+<li data-ih="eq1"></li><li data-ih="eq2"></li><li data-ih="eq3"></li><li data-ih="eq4"></li><li data-ih="eq5"></li></ul>
+<div class="aviso" data-ih="eq_aviso"></div></div>
+<div class="painel ajuda sec" id="sec-shop"><h3 data-i="cs_shop">Shopping</h3><ul>
+<li data-ih="sh1"></li><li data-ih="sh2"></li><li data-ih="sh3"></li><li data-ih="sh4"></li></ul></div>
 </div>
 <div class="rod" id="rod"></div>
-<script src="players.js?v=1794604452070" onerror="void 0"></script>
-<script src="lib.js?v=1794604452070"></script>
-<script src="i18n.js?v=1794604452070"></script>
-<script src="app.js?v=1794604452070"></script>
+<script src="players.js?v=1794608898071" onerror="void 0"></script>
+<script src="lib.js?v=1794608898071"></script>
+<script src="i18n.js?v=1794608898071"></script>
+<script src="app.js?v=1794608898071"></script>
 </body></html>

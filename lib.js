@@ -165,7 +165,7 @@ const need=l=>10*Math.pow(1.1,l-1);                      // EXP para subir de n�
 const item=id=>ITENS.find(i=>i.id===id);
 // Inventário: itens guardados (d.itens) + itens exclusivos do dono + o item do nível atual. Cada item tem um NÚMERO FIXO (num) e um código de equipar:
 // !ew<num> = arma, !ea<num> = armadura (ex.: !ew45). !ew0 / !ea0 voltam ao automático. Equipado = o escolhido pelo jogador (d.equip) ou, se não escolheu, o mais forte.
-const pot=i=>(i.atk||0)+(i.hp||0)+(i.def||0);
+const pot=i=>(i.atk||0)+2*(i.def||0)+.2*(i.hp||0);   // poder de luta (CP) do item: o equipamento automático escolhe sempre o de maior CP
 const SL=['arma','armadura','capacete'],codigo=i=>i&&i.num!=null&&SL.includes(i.slot)?({arma:'ew',armadura:'ea',capacete:'eh'})[i.slot]+i.num:'';
 const noDoNivel=(d,s)=>ITENS.find(i=>i.slot===s&&i.classe===d.classe&&!i.exclusivo&&d.lv>=i.de&&d.lv<=i.ate);
 function inventarioDe(d){const ids=new Set(d.itens||[]);const r=ITENS.filter(i=>ids.has(i.id)||(d.nome&&!d.uid&&i.exclusivo===d.nome));for(const s of SL){const x=noDoNivel(d,s);if(x&&!r.includes(x))r.push(x)}return r}
@@ -182,7 +182,7 @@ const num=v=>Math.round(v*10)/10;
 // Kit básico de novato (visual padrão e simples, sempre disponível, igual para todas as classes; sem número/código). O resto do equipamento é exclusivo/especial.
 (()=>{const A={guerreiro:'Machado Simples',tank:'Maça Simples',mago:'Cajado Simples',healer:'Cetro Simples'},H={guerreiro:'Capacete de Novato',tank:'Capacete de Novato',mago:'Chapéu de Novato',healer:'Capuz de Novato'};
  for(const c of Object.keys(A)){const o={classe:c,tema:'novato',tier:1,de:1,ate:9999};
-  ITENS.push(Object.assign({id:'basico-'+c+'-arma',pasta:'armas',slot:'arma',nome:A[c]},o,c==='tank'?{atk:3,def:25}:{atk:10}),Object.assign({id:'basico-'+c+'-armadura',pasta:'armaduras',slot:'armadura',nome:'Roupa de Novato',def:5},o),Object.assign({id:'basico-'+c+'-capacete',pasta:'armaduras',slot:'capacete',nome:H[c],hp:100},o))}})();
+  ITENS.push(Object.assign({id:'basico-'+c+'-arma',pasta:'armas',slot:'arma',nome:A[c]},o,c==='tank'?{atk:3,def:10}:{atk:10}),Object.assign({id:'basico-'+c+'-armadura',pasta:'armaduras',slot:'armadura',nome:'Roupa de Novato',def:5},o),Object.assign({id:'basico-'+c+'-capacete',pasta:'armaduras',slot:'capacete',nome:H[c],hp:100},o))}})();
 
 // Desenho dos personagens por classe (usado no jogo e na tela Personagens).
 // O visual de cada faixa de 10 níveis vem de TEMAS (js/temas.js): cores, brilhos e efeitos.
