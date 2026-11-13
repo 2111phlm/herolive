@@ -154,7 +154,7 @@ function tx(s,x,y,z,c,a){ctx.font='bold '+z+'px system-ui';ctx.textAlign=a||'cen
 
 // ---- classes ----  cd = recarga da skill (s) | alcance = distância do ataque básico (px)
 const CLASSES={
- guerreiro:{nome:'Guerreiro',cod:'sw',icone:'⚔️',alcance:34,cd:45,passiva:'+20% de dano',skill:'Fúria: +50% vel. de ataque e +30% de dano por 5s'},
+ guerreiro:{nome:'Guerreiro',cod:'sw',icone:'⚔️',alcance:34,cd:45,passiva:'+20% de dano',skill:'Fúria: 2,5x vel. de ataque e 2,5x de dano por 10s'},
  tank:{nome:'Tank',cod:'st',icone:'🛡️',alcance:34,cd:15,passiva:'-50% de dano recebido; os monstros atacam os tanks primeiro',skill:'Urro: atrai todos os mobs, +100% defesa por 8s e cura 10% da vida'},
  mago:{nome:'Mago',cod:'sm',icone:'🔮',alcance:130,cd:30,passiva:'+20% de dano',skill:'Bola de Fogo: dano em área de 5x o ataque'},
  healer:{nome:'Healer',cod:'sh',icone:'✨',alcance:120,cd:30,passiva:'-10% de recarga da habilidade',skill:'Cura em Área: cura todos os aliados por perto'}};
