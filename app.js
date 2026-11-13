@@ -13,7 +13,7 @@ function lista(q){q=q.trim().toUpperCase();let f=q?LISTA.filter(d=>d.nome.toUppe
   $('lista').style.display=q?'block':'none';$('lt').textContent=t('res');
   $('res').innerHTML=f.length?'':'<span class="nada">'+t('nenhum')+(q?t('nenhumQ'):t('nenhumV'))+'</span>';
   f.slice(0,q?60:24).forEach(d=>{const b=document.createElement('button');b.className='chip';b.textContent=CL(d.classe).icone+' '+d.nome+' · Lv'+mx(d);b.onclick=()=>{location.hash=encodeURIComponent(d.nome)};$('res').appendChild(b)})}
-function abas(el,sel,fn,d){el.innerHTML='';ORD.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===sel?' on':'');b.innerHTML=CL(c).icone+'<b>'+CL(c).nome+'</b>'+(d?'Lv'+lvDe(d,c):'');b.onclick=()=>fn(c);el.appendChild(b)})}
+function abas(el,sel,fn,d,todos){el.innerHTML='';if(todos){const b=document.createElement('button');b.className='tab'+('todos'===sel?' on':'');b.innerHTML='🌐<b>'+t('todos')+'</b>';b.onclick=()=>fn('todos');el.appendChild(b)}ORD.forEach(c=>{const b=document.createElement('button');b.className='tab'+(c===sel?' on':'');b.innerHTML=CL(c).icone+'<b>'+CL(c).nome+'</b>'+(d?'Lv'+lvDe(d,c):'');b.onclick=()=>fn(c);el.appendChild(b)})}
 function mostrar(d,novo){const outro=!ATUAL||!d||ATUAL.nome!==d.nome;ATUAL=d||null;$('vista').style.display=d?'flex':'none';if(!d){PD=null;loja();return}
   if(outro){CS=d.classe;LC=CS}
   const v=visaoDe(d,CS);abas($('tabs'),CS,c=>{CS=c;LC=c;mostrar(ATUAL,false)},d);
@@ -21,24 +21,24 @@ function mostrar(d,novo){const outro=!ATUAL||!d||ATUAL.nome!==d.nome;ATUAL=d||nu
   $('nome').textContent=d.nome+' — Lv'+v.lv+' '+CL(CS).nome;{const nx=v.lv>=100?0:need(v.lv),ex=Math.max(0,v.exp||0),pc=nx?Math.min(100,ex/nx*100):100;$('xpb').style.width=pc+'%';$('xpt').textContent=nx?t('xp')+' '+fmt(ex)+' / '+fmt(nx)+' ('+Math.floor(pc)+'%) '+t('proxnv')+' '+(v.lv+1):t('xpmax')}$('moedas').innerHTML='💰 <b>'+fmt(d.coins||0)+'</b> '+t('moedas');
   $('stats').innerHTML='<div>⚔️<b>'+num(s.atk)+'</b>'+t('atk')+'</div><div>🛡️<b>'+num(s.def)+'</b>'+t('def')+'</div><div>❤️<b>'+Math.round(s.hp)+'</b>'+t('vida')+'</div><div>⚡<b>'+fmt(PODER(s))+'</b>'+t('poder')+'</div>';
   const capa=e.capacete||{slot:'capacete',classe:CS,tema:e.armadura?e.armadura.tema:'madeira',tier:e.armadura?e.armadura.tier:1};
-  for(const[sl,it,nm]of[['arma',e.arma,e.arma&&e.arma.nome],['armadura',e.armadura,e.armadura&&e.armadura.nome],['capacete',capa,capa.nome||nomeCobertura(CS,TEMAS[capa.tema]||TEMAS.madeira)]]){icone($('s-'+sl),it,0);$('n-'+sl).textContent=nm?NI(nm):'—'}
+  for(const[sl,it,nm]of[['arma',e.arma,e.arma&&e.arma.nome],['armadura',e.armadura,e.armadura&&e.armadura.nome],['capacete',capa,capa.nome||nomeCobertura(CS,TEMAS[capa.tema]||TEMAS.madeira)],['pentagrama',e.pentagrama,e.pentagrama&&e.pentagrama.nome],['capa',e.capa,e.capa&&e.capa.nome]]){icone($('s-'+sl),it,0);$('n-'+sl).textContent=nm?NI(nm):'—'}
   PD={d:v,eq:e,h,sw:0,mv:0,cast:0};
-  const inv=[...new Set([e.arma,e.armadura,e.capacete,...inventarioDe(v)].filter(Boolean))].filter(it=>!it.classe||it.classe===CS).sort((a,b)=>(a.slot>b.slot?1:-1)||(a.num||0)-(b.num||0)),g=$('grid');g.innerHTML='';
-  inv.forEach(it=>g.appendChild(card(it,it===e.arma||it===e.armadura||it===e.capacete,'')));
+  const inv=[...new Set([e.arma,e.armadura,e.capacete,e.pentagrama,e.capa,...inventarioDe(v)].filter(Boolean))].filter(it=>!it.classe||it.classe===CS).sort((a,b)=>(a.slot>b.slot?1:-1)||(a.num||0)-(b.num||0)),g=$('grid');g.innerHTML='';
+  inv.forEach(it=>g.appendChild(card(it,it===e.arma||it===e.armadura||it===e.capacete||it===e.pentagrama||it===e.capa,'')));
   loja()}
-const PODER=s=>(s.atk||0)+2*(s.def||0)+.2*(s.hp||0);   // poder de luta = ataque + 2×defesa + 0,2×vida
-function atrib(it){return(it.atk?'⚔️'+fmt(it.atk)+' ':'')+(it.def?'🛡️'+fmt(it.def)+' ':'')+(it.hp?'❤️'+fmt(it.hp)+' ':'')+(PODER(it)?'⚡'+fmt(PODER(it)):'')}
+const PODER=s=>(s.atk||0)+2*(s.def||0)+.2*(s.hp||0)+(s.cpx||0);   // poder de luta = ataque + 2×defesa + 0,2×vida
+function atrib(it){return(it.atk?'⚔️'+fmt(it.atk)+' ':'')+(it.def?'🛡️'+fmt(it.def)+' ':'')+(it.hp?'❤️'+fmt(it.hp)+' ':'')+(PODER(it)?'⚡'+fmt(PODER(it)):'')+(it.desc?'<br>✨'+ND(it):'')}
 function card(it,eq,extra){const b=document.createElement('div');b.className='it'+(eq?' eq':'');const k=document.createElement('canvas');b.appendChild(k);const n=document.createElement('div'),c=codigo(it);
-  n.innerHTML='<b>'+NI(it.nome)+(eq?' ✔':'')+'</b><br><small>'+CL(it.classe).icone+' '+CL(it.classe).nome+' · '+atrib(it)+'<br>'+(c?'<code>!'+c+'</code>':(it.slot==='extra'?'':t('padrao')))+(extra||'')+'</small>';
+  n.innerHTML='<b>'+NI(it.nome)+(eq?' ✔':'')+'</b><br><small>'+(it.universal?'🌐 '+t('todas'):CL(it.classe).icone+' '+CL(it.classe).nome)+' · '+atrib(it)+'<br>'+(c?'<code>!'+c+'</code>':(it.slot==='extra'?'':t('padrao')))+(extra||'')+'</small>';
   b.appendChild(n);icone(k,it,0);return b}
 let LT='coins';
 function lojaAbas(){const el=$('lojatabs');el.innerHTML='';[['coins','lt_coins'],['tiktok','lt_tiktok']].forEach(([k,tk])=>{const b=document.createElement('button');b.className='tab'+(k===LT?' on':'');b.textContent=t(tk);b.onclick=()=>{LT=k;loja()};el.appendChild(b)});
   $('loja-coins').style.display=LT==='coins'?'block':'none';$('loja-tiktok').style.display=LT==='tiktok'?'block':'none'}
-function loja(){lojaAbas();abas($('ltabs'),LC,c=>{LC=c;loja()},null);const g=$('lg');g.innerHTML='';
+function loja(){lojaAbas();abas($('ltabs'),LC,c=>{LC=c;loja()},null,true);const g=$('lg');g.innerHTML='';
   const tem=new Set(ATUAL?ATUAL.itens:[]);
-  for(const[sl,tt,pre]of[['arma',t('armas'),'bw'],['armadura',t('armaduras'),'ba'],['capacete',t('capacetes'),'bh']]){const h=document.createElement('h3');h.textContent=tt;g.appendChild(h);const gr=document.createElement('div');gr.className='grid';gr.id='lg-'+sl;gr.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px';
-    ITENS.filter(i=>i.loja&&i.classe===LC&&i.slot===sl).sort((a,b)=>a.preco-b.preco).forEach(it=>{const ja=tem.has(it.id),cd=document.createElement('div');cd.className='it'+(ja?' tem':'');const k=document.createElement('canvas');cd.appendChild(k);const n=document.createElement('div');
-      n.innerHTML='<b>'+NI(it.nome)+'</b><br><small>'+atrib(it)+'<br><span class="preco">💰 '+fmt(it.preco)+'</span><br>'+(ja?t('tem'):'<code>!'+pre+it.num+'</code>')+'</small>';cd.appendChild(n);gr.appendChild(cd);icone(k,it,0)});g.appendChild(gr)}}
+  for(const[sl,tt,pre]of[['arma',t('armas'),'bw'],['armadura',t('armaduras'),'ba'],['capacete',t('capacetes'),'bh'],['pentagrama',t('pentagramas'),'bp'],['capa',t('capas'),'bc']]){const h=document.createElement('h3');h.textContent=tt;g.appendChild(h);const gr=document.createElement('div');gr.className='grid';gr.id='lg-'+sl;gr.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px';
+    ITENS.filter(i=>i.loja&&(LC==='todos'||i.universal||i.classe===LC)&&i.slot===sl).sort((a,b)=>a.preco-b.preco).forEach(it=>{const ja=tem.has(it.id),cd=document.createElement('div');cd.className='it'+(ja?' tem':'');const k=document.createElement('canvas');cd.appendChild(k);const n=document.createElement('div');
+      n.innerHTML='<b>'+NI(it.nome)+'</b><br><small>'+(LC==='todos'&&it.classe?CL(it.classe).icone+' '+CL(it.classe).nome+'<br>':'')+atrib(it)+'<br><span class="preco">💰 '+fmt(it.preco)+'</span><br>'+(ja?t('tem'):'<code>!'+pre+it.num+'</code>')+'</small>';cd.appendChild(n);gr.appendChild(cd);icone(k,it,0)});g.appendChild(gr)}}
 const PAGS=['personagens','loja','drops','como','ranking'],SECS=['geral','classes','comandos','equipar','shop'];let CSEC='geral';
 const VEL=2;   // a dungeon roda em velocidade x2 (VEL_COMBATE no jogo): recargas e durações em segundos reais = valor do jogo ÷ 2
 const dec=n=>n.toLocaleString(t('loc'),{maximumFractionDigits:1});
@@ -46,7 +46,7 @@ function como(sec){CSEC=SECS.includes(sec)?sec:'geral';const ab=$('ctabs');ab.in
   SECS.forEach(k=>{const b=document.createElement('button');b.className='tab'+(k===CSEC?' on':'');b.textContent=t('cs_'+k);b.onclick=()=>{history.replaceState(null,'',location.pathname+'#/como/'+k);como(k)};ab.appendChild(b);$('sec-'+k).classList.toggle('on',k===CSEC)});
   const c=$('cls');c.innerHTML='';ORD.forEach(k=>{const cd=CLASSES[k].cd*(k==='healer'?.9:1)/VEL,d=document.createElement('div');d.className='cls';
     d.innerHTML='<h3>'+CLASSES[k].icone+' '+t('c_'+k)+' <small>(<code>'+CLASSES[k].cod+'</code>)</small></h3><p>'+t('cl_papel_'+k)+'</p><p><span class="tag">'+t('cl_pas')+'</span>'+t('cl_pas_'+k)+'</p><p><span class="tag">'+t('cl_sk')+'</span>'+t('cl_sk_'+k)+'</p><p><span class="tag">'+t('cl_cd')+'</span>'+dec(cd)+' s</p>';c.appendChild(d)});
-  const rows=[['<code>sw</code> <code>st</code> <code>sm</code> <code>sh</code>','cm_entrar'],['<code>1</code>','cm_skill'],['<code>!ew&lt;n&gt;</code> <code>!ea&lt;n&gt;</code> <code>!eh&lt;n&gt;</code>','cm_eq'],['<code>!ew0</code> <code>!ea0</code> <code>!eh0</code>','cm_auto'],['<code>!bw&lt;n&gt;</code> <code>!ba&lt;n&gt;</code> <code>!bh&lt;n&gt;</code>','cm_buy']];
+  const rows=[['<code>sw</code> <code>st</code> <code>sm</code> <code>sh</code>','cm_entrar'],['<code>1</code>','cm_skill'],['<code>!ew&lt;n&gt;</code> <code>!ea&lt;n&gt;</code> <code>!eh&lt;n&gt;</code>','cm_eq'],['<code>!ew0</code> <code>!ea0</code> <code>!eh0</code>','cm_auto'],['<code>!ep&lt;n&gt;</code> <code>!ec&lt;n&gt;</code>','cm_eqx'],['<code>!bp&lt;n&gt;</code> <code>!bc&lt;n&gt;</code>','cm_buyx'],['<code>!bw&lt;n&gt;</code> <code>!ba&lt;n&gt;</code> <code>!bh&lt;n&gt;</code>','cm_buy']];
   $('cmdt').innerHTML='<tr><td><b>'+t('cm_h1')+'</b></td><td><b>'+t('cm_h2')+'</b></td></tr>'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+t(r[1])+'</td></tr>').join('')}
 let RK='nivel';
 const nivelMax=d=>Math.max(d.lv||1,...Object.values(d.cl||{}).map(x=>x.lv||1));

@@ -165,8 +165,8 @@ const need=l=>10*Math.pow(1.1,l-1);                      // EXP para subir de n�
 const item=id=>ITENS.find(i=>i.id===id);
 // Inventário: itens guardados (d.itens) + itens exclusivos do dono + o item do nível atual. Cada item tem um NÚMERO FIXO (num) e um código de equipar:
 // !ew<num> = arma, !ea<num> = armadura (ex.: !ew45). !ew0 / !ea0 voltam ao automático. Equipado = o escolhido pelo jogador (d.equip) ou, se não escolheu, o mais forte.
-const pot=i=>(i.atk||0)+2*(i.def||0)+.2*(i.hp||0);   // poder de luta (CP) do item: o equipamento automático escolhe sempre o de maior CP
-const SL=['arma','armadura','capacete'],codigo=i=>i&&i.num!=null&&SL.includes(i.slot)?({arma:'ew',armadura:'ea',capacete:'eh'})[i.slot]+i.num:'';
+const pot=i=>(i.atk||0)+2*(i.def||0)+.2*(i.hp||0)+(i.cpx||0);   // poder de luta (CP) do item: o equipamento automático escolhe sempre o de maior CP
+const SL=['arma','armadura','capacete'],SLU=['pentagrama','capa'],COD_SL={arma:'ew',armadura:'ea',capacete:'eh',pentagrama:'ep',capa:'ec'},codigo=i=>i&&i.num!=null&&COD_SL[i.slot]?COD_SL[i.slot]+i.num:'';
 const noDoNivel=(d,s)=>ITENS.find(i=>i.slot===s&&i.classe===d.classe&&!i.exclusivo&&d.lv>=i.de&&d.lv<=i.ate);
 function inventarioDe(d){const ids=new Set(d.itens||[]);const r=ITENS.filter(i=>ids.has(i.id)||(d.nome&&!d.uid&&i.exclusivo===d.nome));for(const s of SL){const x=noDoNivel(d,s);if(x&&!r.includes(x))r.push(x)}return r}
 // Nível por classe: d.lv/d.exp = classe ativa (d.classe); as outras ficam guardadas em d.cl[classe]={lv,exp}.
@@ -175,9 +175,12 @@ const visaoDe=(d,c)=>c===d.classe?d:Object.assign({},d,{classe:c,lv:lvDe(d,c),ex
 function trocarClasse(d,c){d.cl=d.cl||{};if(d.classe&&d.classe!==c)d.cl[d.classe]={lv:d.lv,exp:d.exp};const x=d.cl[c]||{lv:1,exp:0};d.classe=c;d.lv=x.lv;d.exp=x.exp;d.cl[c]={lv:d.lv,exp:d.exp}}
 function equipDe(d){const inv=inventarioDe(d),q=(d.equip&&d.equip[d.classe])||{};
  const melhor=s=>{const e=q[s],esc=e&&inv.find(i=>i.id===e&&i.slot===s&&i.classe===d.classe);if(esc)return esc;return inv.filter(i=>i.slot===s&&i.classe===d.classe).reduce((x,y)=>!x||pot(y)>pot(x)?y:x,undefined)};
- return{arma:melhor('arma'),armadura:melhor('armadura'),capacete:melhor('capacete')}}
+ const univ=s=>{const e=q[s],esc=e&&inv.find(i=>i.id===e&&i.slot===s);if(esc)return esc;return inv.filter(i=>i.slot===s).reduce((x,y)=>!x||pot(y)>pot(x)?y:x,undefined)};
+ return{arma:melhor('arma'),armadura:melhor('armadura'),capacete:melhor('capacete'),pentagrama:univ('pentagrama'),capa:univ('capa')}}
 const ESC=10;   // escala de todos os status (jogador, itens, monstros): números maiores dão margem para o equilíbrio por faixas de poder (CP)
-function statsDe(d){const e=equipDe(d),L=d.lv-1;return{atk:ESC*(50+L)+(e.arma?e.arma.atk||0:0),def:ESC*(25+.5*L)+(e.arma?e.arma.def||0:0)+(e.armadura?e.armadura.def||0:0)+(e.capacete?e.capacete.def||0:0),hp:ESC*(250+3*L)+(e.armadura?e.armadura.hp||0:0)+(e.capacete?e.capacete.hp||0:0),dl:2}}
+function statsDe(d){const e=equipDe(d),L=d.lv-1,u=[e.pentagrama,e.capa].filter(Boolean),M={};for(const i of u)for(const k in i.mods||{})M[k]=(M[k]||0)+i.mods[k];
+ const f=k=>u.reduce((a,i)=>a+(i[k]||0),0);
+ return{atk:(ESC*(50+L)+(e.arma?e.arma.atk||0:0)+f('atk'))*(1+(M.atkP||0)),def:(ESC*(25+.5*L)+(e.arma?e.arma.def||0:0)+(e.armadura?e.armadura.def||0:0)+(e.capacete?e.capacete.def||0:0)+f('def'))*(1+(M.defP||0)),hp:ESC*(250+3*L)+(e.armadura?e.armadura.hp||0:0)+(e.capacete?e.capacete.hp||0:0),dl:2,vel:M.vel||0,red:M.red||0,cd:M.cd||0,alc:M.alc||0,cura:M.cura||0,cpx:f('cpx')}}
 const num=v=>Math.round(v*10)/10;
 // Kit básico de novato (visual padrão e simples, sempre disponível, igual para todas as classes; sem número/código). O resto do equipamento é exclusivo/especial.
 (()=>{const A={guerreiro:'Machado Simples',tank:'Maça Simples',mago:'Cajado Simples',healer:'Cetro Simples'},H={guerreiro:'Capacete de Novato',tank:'Capacete de Novato',mago:'Chapéu de Novato',healer:'Capuz de Novato'};
@@ -435,15 +438,25 @@ function torso(cl,tm,tier,T,bob,w){if(tm.neve){torsoNeve(T,bob,w);return}const a
   co(-13,-36-bob,7,ac);ctx.fillStyle='rgba(255,255,255,.3)';ci(-14,-38-bob,3);if(tier>=5)forma(()=>{ctx.moveTo(-16,-41-bob);ctx.lineTo(-14,-50-bob);ctx.lineTo(-11,-42-bob)},ac2,1.1);
   co(12,-35.5-bob,5,ac);ctx.fillStyle='rgba(255,255,255,.3)';ci(11,-37-bob,2.4)}}
 
+// ---- pentagrama (aura simples no pé) e capa (nas costas) da loja ----
+function pentagramaItem(c,T,y,k){ctx.save();ctx.translate(0,y||0);ctx.scale(1,.38*(k||1)*1/(k||1));const r=(k||1)*24,pul=.55+.25*Math.sin(T*3);
+ ctx.globalCompositeOperation='lighter';glow(0,0,r*1.25,c,'66');ctx.globalAlpha=pul+.2;ctx.strokeStyle=c;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.stroke();
+ ctx.rotate(T*.5);ctx.beginPath();for(let i=0;i<6;i++){const a=(i*2%5)*Math.PI*2/5-Math.PI/2;const q=i===5?0:i;const aa=(q*2%5)*Math.PI*2/5-Math.PI/2;i?ctx.lineTo(Math.cos(aa)*r,Math.sin(aa)*r):ctx.moveTo(Math.cos(aa)*r,Math.sin(aa)*r)}ctx.stroke();ctx.restore()}
+function capaItem(c,T,bob,k){const sw=Math.sin(T*2.2)*2.5,L=(k||1)*34;ctx.save();ctx.translate(0,-bob);
+ forma(()=>{ctx.moveTo(-3,-36);ctx.quadraticCurveTo(-14-sw,-24,-12-sw*1.5,-36+L);ctx.lineTo(1,-36+L-4+sw*.4);ctx.quadraticCurveTo(-2,-22,3,-33)},c,1.3);
+ ctx.fillStyle='rgba(255,255,255,.18)';ctx.beginPath();ctx.moveTo(-5,-33);ctx.quadraticCurveTo(-11-sw,-22,-9-sw*1.4,-36+L-6);ctx.lineTo(-6,-36+L-8);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#fbbf24';ci(-2,-36,2.4);ctx.restore()}
 // ---- personagem completo (origem = pés, virado para a direita). p = {d:{classe,lv},eq:{arma,armadura},h,sw,mv,cast,buff} ----
 function corpo(p,T){const cl=(p.d&&p.d.classe)||'guerreiro',e=p.eq||{},AR=e.armadura,tm=TEMAS[AR?AR.tema:'madeira']||TEMAS.madeira,tier=AR?AR.tier:1;
  // arma e capacete têm o visual do PRÓPRIO tema (não do tema da armadura): trocar só a arma/capacete muda o desenho
  const tmW=e.arma&&TEMAS[e.arma.tema]||tm,tierW=e.arma&&TEMAS[e.arma.tema]?e.arma.tier:tier,tmH=e.capacete&&TEMAS[e.capacete.tema]||tm;
  const h=p.h||0,pele=PELE[h%4],cab=CAB[(h>>>2)%8],mv=p.mv>0,w=mv?Math.sin(T*14):0,bob=mv?Math.abs(Math.sin(T*14))*2.2:Math.sin(T*3)*.8,sw=p.sw||0,cast=p.cast||0;
+ if(e.pentagrama)pentagramaItem(e.pentagrama.cor,T,-1);
  if(tm.glow)glow(0,-26,44,tm.glow,'66');
  const b=p.buff&&p.buff.t>0?p.buff.tipo:'';
  if(b==='fur'){glow(0,-26,50,'#ef4444','88');ctx.fillStyle='rgba(251,146,60,.85)';for(let i=0;i<6;i++){const x=-22+i*9,hh=14+Math.sin(T*14+i*1.7)*6;ctx.beginPath();ctx.moveTo(x-4,-2);ctx.quadraticCurveTo(x,-2-hh,x+1,-2-hh*1.6);ctx.quadraticCurveTo(x+3,-2-hh*.6,x+4,-2);ctx.fill()}}
  if(tm.draco){aura(T,0);cauda(T,bob);asas(T,bob)}else if(tm.neve){auraNeve(T,0);asasNeve(T,bob);capaNeve(T,bob);cabeloNeve(T,bob)}else capa(tm,tier,T,bob);
+ if(e.capa)capaItem(e.capa.cor,T,bob);
  if((cl==='mago'||cl==='healer')&&!tm.neve)cabeloLongo(cab,T,bob,-19);
 
  torso(cl,tm,tier,T,bob,w);
@@ -466,7 +479,9 @@ function corpo(p,T){const cl=(p.d&&p.d.classe)||'guerreiro',e=p.eq||{},AR=e.arma
  if(b==='def'){ctx.strokeStyle='rgba(125,211,252,.9)';ctx.lineWidth=2;ctx.fillStyle='rgba(56,189,248,.18)';ctx.beginPath();for(let k=0;k<6;k++){const a=k*Math.PI/3+T*.8,x=Math.cos(a)*42,y=-28+Math.sin(a)*46;k?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.fill();ctx.stroke()}}
 
 // ---- ícones (inventário / slots): centrados em (0,0), cabem em ~64 px ----
-function iconeItem(it,T){if(it.icone){ctx.save();ctx.translate(0,8);ctx.scale(.8,.8);it.icone(ctx,T);ctx.restore();return}
+function iconeItem(it,T){if(it.slot==='pentagrama'){ctx.save();ctx.translate(0,4);ctx.scale(1.25,2.2);pentagramaItem(it.cor,T,0,.9);ctx.restore();return}
+ if(it.slot==='capa'){ctx.save();ctx.translate(2,14);ctx.scale(1.5,1.5);capaItem(it.cor,T,0,1.1);ctx.restore();return}
+ if(it.icone){ctx.save();ctx.translate(0,8);ctx.scale(.8,.8);it.icone(ctx,T);ctx.restore();return}
  const tm=TEMAS[it.tema]||TEMAS.madeira,cl=it.classe,pele=PELE[0];ctx.save();
  if(it.slot==='arma'){const f={guerreiro:[.92,20],mago:[1,27],healer:[1.05,25],tank:[1,-2]}[cl];if(cl!=='tank')ctx.rotate(.7);ctx.scale(f[0],f[0]);ctx.translate(0,f[1]);armaDesenho(cl,tm,it.tier,T,pele,0,1)}
  else if(it.slot==='capacete'){ctx.scale(1.2,1.2);ctx.translate(0,60);co(0,-48,12,pele);cobertura(cl,tm,T,0)}
@@ -486,3 +501,10 @@ function iconeItem(it,T){if(it.icone){ctx.save();ctx.translate(0,8);ctx.scale(.8
    Object.assign({id:`loja-${c}-capacete-${t+1}`,num:51+ci*15+10+t,pasta:'armaduras',slot:'capacete',nome:nomeCobertura(c,T),hp:HP[t]},o))}))})();
 // Escala os status de TODOS os itens (básicos, loja e exclusivos) uma única vez, depois que tudo foi carregado
 ITENS.forEach(i=>{if(i._esc)return;i._esc=1;for(const k of['atk','def','hp'])if(i[k])i[k]=Math.round(i[k]*ESC)});
+
+// Pentagramas (aura no pé) e capas (nas costas): itens de TODAS as classes. Valores abaixo já são finais (não passam pela escala x10). cpx = CP extra dos atributos especiais.
+// !bp<n> compra pentagrama, !bc<n> compra capa; !ep<n> / !ec<n> equipam (!ep0 / !ec0 = automático).
+(()=>{const P=[['Pentagrama Rubro','#ef4444',{atk:100,mods:{vel:.04},cpx:1700,desc:'+4% velocidade de ataque'}],['Pentagrama Dourado','#fbbf24',{atk:200,mods:{atkP:.02},cpx:1600,desc:'+2% ataque'}],['Pentagrama Azul','#38bdf8',{def:250,mods:{red:.04},cpx:1300,desc:'-4% dano recebido'}],['Pentagrama Violeta','#c084fc',{mods:{cd:.05},cpx:1800,desc:'-5% recarga da habilidade'}]],
+ C=[['Capa do Furor','#f87171',{mods:{atkP:.02,defP:.02},cpx:1200,desc:'+2% ataque e +2% defesa'}],['Capa Sanguinária','#b91c1c',{mods:{atkP:.1,defP:-.25},cpx:1200,desc:'+10% ataque, -25% defesa'}],['Capa do Atirador','#34d399',{mods:{alc:32},cpx:1200,desc:'+1 de alcance'}],['Capa da Vida','#86efac',{mods:{cura:.05},cpx:1200,desc:'+5% de cura'}]];
+ P.forEach(([nome,cor,o],i)=>ITENS.push(Object.assign({id:'loja-pentagrama-'+(i+1),num:111+i,slot:'pentagrama',nome,cor,preco:5e6,loja:1,universal:1,de:9999,ate:9999,tier:6,_esc:1},o)));
+ C.forEach(([nome,cor,o],i)=>ITENS.push(Object.assign({id:'loja-capa-'+(i+1),num:115+i,slot:'capa',nome,cor,preco:2.5e6,loja:1,universal:1,de:9999,ate:9999,tier:6,_esc:1},o)))})();

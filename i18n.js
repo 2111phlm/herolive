@@ -34,7 +34,7 @@ pt:{loc:'pt-BR',t_rank:'Ranking',d_rank:'Os jogadores com maior nível, mais moe
  c_guerreiro:'Guerreiro',c_tank:'Tank',c_mago:'Mago',c_healer:'Healer',c_esp:'Especial',
  top:'🏆 Maiores níveis',res:'🔎 Resultados',nenhum:'Nenhum jogador encontrado',nenhumQ:' com esse nome.',nenhumV:' ainda.',
  atk:'Ataque',def:'Defesa',vida:'Vida',moedas:'moedas',padrao:'padrão',tem:'✔ você já tem',
- armas:'Armas',armaduras:'Armaduras',capacetes:'Capacetes',jog:'jogadores',atual:'atualizado',erro:'Não foi possível carregar os jogadores agora.'},
+ todos:'Todos',pentagramas:'Pentagramas',capas:'Capas',todas:'Todas as classes',cm_eqx:'Equipa o pentagrama (<code>!ep&lt;n&gt;</code>) ou a capa (<code>!ec&lt;n&gt;</code>) de número n. Servem para qualquer classe. <code>!ep0</code> / <code>!ec0</code> voltam ao automático.',cm_buyx:'Compra pentagrama (<code>!bp&lt;n&gt;</code>) ou capa (<code>!bc&lt;n&gt;</code>) na loja.',armas:'Armas',armaduras:'Armaduras',capacetes:'Capacetes',jog:'jogadores',atual:'atualizado',erro:'Não foi possível carregar os jogadores agora.'},
 en:{loc:'en-US',t_rank:'Ranking',d_rank:'Players with the highest level, most coins and highest combat power.',rk_nivel:'🎖️ Highest level',rk_moedas:'💰 Most coins',rk_poder:'⚡ Highest power',rk_vazio:'Nobody in the ranking yet.',poder:'Power',t_pers:'Find characters',d_pers:'Look up your character, items, level and stats for each class.',t_loja:'Shop',d_loja:'See the items for sale and the codes to buy them with your coins.',t_drops:'Drops',d_drops:'What each monster and boss drops.',t_como:'How to play',d_como:'Chat commands, how to equip items and how classes work.',voltar:'← Home',breveTag:'Coming soon',breveMsg:'Coming soon! We are preparing this page.',titulo:'⚔️ Live Heroes',sub:'Look up your character, check your items and learn how to equip them from the live chat.',busca:'🔎 Type your player name...',
  inv:'🎒 Inventory',lojaT:'🛒 Shop',lojaP:'Earn coins by defeating monsters (1 per slime, 3 per goblin, 100 per boss — for everyone in the run, even fallen players). Buy with the item code in chat, then equip it.',
  ajT:'🎮 How to play',cs_geral:'📘 General info',cs_classes:'⚔️ Classes',cs_comandos:'⌨️ Commands',cs_equipar:'🎒 Equipping items',cs_shop:'🛒 Shop',
@@ -69,7 +69,7 @@ en:{loc:'en-US',t_rank:'Ranking',d_rank:'Players with the highest level, most co
  c_guerreiro:'Warrior',c_tank:'Tank',c_mago:'Mage',c_healer:'Healer',c_esp:'Special',
  top:'🏆 Top levels',res:'🔎 Results',nenhum:'No players found',nenhumQ:' with that name.',nenhumV:' yet.',
  atk:'Attack',def:'Defense',vida:'Health',moedas:'coins',padrao:'default',tem:'✔ you already own this',
- armas:'Weapons',armaduras:'Armors',capacetes:'Helmets',jog:'players',atual:'updated',erro:'Could not load the players right now.'}};
+ todos:'All',pentagramas:'Pentagrams',capas:'Capes',todas:'All classes',cm_eqx:'Equips the pentagram (<code>!ep&lt;n&gt;</code>) or cape (<code>!ec&lt;n&gt;</code>) number n. They work for any class. <code>!ep0</code> / <code>!ec0</code> go back to automatic.',cm_buyx:'Buys a pentagram (<code>!bp&lt;n&gt;</code>) or cape (<code>!bc&lt;n&gt;</code>) in the shop.',armas:'Weapons',armaduras:'Armors',capacetes:'Helmets',jog:'players',atual:'updated',erro:'Could not load the players right now.'}};
 let IDI='pt';try{IDI=localStorage.getItem('idioma')||(/^en/i.test(navigator.language)?'en':'pt')}catch(e){IDI=/^en/i.test(navigator.language)?'en':'pt'}
 if(!I18[IDI])IDI='pt';
 const t=k=>(I18[IDI]&&I18[IDI][k])||I18.pt[k]||k;
@@ -82,3 +82,7 @@ const NOMES_EN={'Armadurona Escama Infernal':'Infernal Scale Heavy Armor','Cajad
 const MAT_EN={Ferro:'Iron',Ouro:'Gold',Diamante:'Diamond',Celestial:'Celestial','Cósmica':'Cosmic'};
 const TIPO_EN={Armadurona:'Heavy Armor',Cajado:'Staff',Cetro:'Scepter','Couraça':'Cuirass',Escudo:'Shield',Machado:'Axe',Manto:'Cloak',Vestes:'Vestments','Capacete Berserker':'Berserker Helmet','Chapéu de Mago':'Mage Hat','Capuz de Clérigo':'Cleric Hood'};
 function NI(n){if(IDI!=='en'||!n)return n;if(NOMES_EN[n])return NOMES_EN[n];const m=/^(.+) de (Ferro|Ouro|Diamante|Celestial|Cósmica)$/.exec(n);if(m&&TIPO_EN[m[1]])return MAT_EN[m[2]]+' '+TIPO_EN[m[1]];return n}
+
+Object.assign(NOMES_EN,{'Pentagrama Rubro':'Ruby Pentagram','Pentagrama Dourado':'Golden Pentagram','Pentagrama Azul':'Azure Pentagram','Pentagrama Violeta':'Violet Pentagram','Capa do Furor':'Cape of Fury','Capa Sanguinária':'Bloodthirsty Cape','Capa do Atirador':"Marksman's Cape",'Capa da Vida':'Cape of Life'});
+const DESC_EN={'+4% velocidade de ataque':'+4% attack speed','+2% ataque':'+2% attack','-4% dano recebido':'-4% damage taken','-5% recarga da habilidade':'-5% skill cooldown','+2% ataque e +2% defesa':'+2% attack and +2% defense','+10% ataque, -25% defesa':'+10% attack, -25% defense','+1 de alcance':'+1 range','+5% de cura':'+5% healing'};
+const ND=it=>it.desc?(IDI==='en'&&DESC_EN[it.desc]||it.desc):'';
