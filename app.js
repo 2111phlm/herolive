@@ -35,8 +35,14 @@ function loja(){abas($('ltabs'),LC,c=>{LC=c;loja()},null);const g=$('lg');g.inne
   for(const[sl,tt,pre]of[['arma',t('armas'),'bw'],['armadura',t('armaduras'),'ba'],['capacete',t('capacetes'),'bh']]){const h=document.createElement('h3');h.textContent=tt;g.appendChild(h);const gr=document.createElement('div');gr.className='grid';gr.id='lg-'+sl;gr.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px';
     ITENS.filter(i=>i.loja&&i.classe===LC&&i.slot===sl).sort((a,b)=>a.preco-b.preco).forEach(it=>{const t=tem.has(it.id),cd=document.createElement('div');cd.className='it'+(t?' tem':'');const k=document.createElement('canvas');cd.appendChild(k);const n=document.createElement('div');
       n.innerHTML='<b>'+NI(it.nome)+'</b><br><small>'+atrib(it)+'<br><span class="preco">💰 '+fmt(it.preco)+'</span><br>'+(t?t('tem'):'<code>!'+pre+it.num+'</code>')+'</small>';cd.appendChild(n);gr.appendChild(cd);icone(k,it,0)});g.appendChild(gr)}}
-function rota(manter){const n=decodeURIComponent(location.hash.slice(1));const d=n&&achar(n);mostrar(d,!manter);if(d)$('busca').value='';lista($('busca').value)}
-$('busca').oninput=()=>{if(location.hash)history.replaceState(null,'',location.pathname);mostrar(null);lista($('busca').value)};
+const PAGS=['personagens','loja','drops','como'];
+// Páginas: #/ = início, #/personagens, #/loja, #/drops, #/como. Qualquer outro texto (#NOME) abre o personagem.
+function rota(manter){const h=decodeURIComponent(location.hash.slice(1));let pg='home',n='';
+  if(h.startsWith('/')){const k=h.slice(1);if(PAGS.includes(k))pg=k}else if(h){pg='personagens';n=h}
+  document.querySelectorAll('.pg').forEach(e=>e.classList.toggle('on',e.id==='pg-'+pg));
+  if(!manter)window.scrollTo(0,0);
+  if(pg==='personagens'){const d=n&&achar(n);mostrar(d,!manter);if(d)$('busca').value='';lista($('busca').value)}else if(pg==='loja')loja()}
+$('busca').oninput=()=>{if(location.hash!=='#/personagens')history.replaceState(null,'',location.pathname+'#/personagens');mostrar(null);lista($('busca').value)};
 addEventListener('hashchange',()=>rota(false));
 (function anim(){const c=$('doll').getContext('2d');usar(c,()=>{c.clearRect(0,0,240,250);if(PD&&ATUAL){c.save();const dr=PD.eq&&PD.eq.armadura&&PD.eq.armadura.exclusivo;c.translate(120,dr?212:225);const k=dr?1.45:1.9;c.scale(k,k);corpo(PD,(performance.now()-T0)/1000);c.restore()}});requestAnimationFrame(anim)})();
 document.querySelectorAll('#idioma [data-l]').forEach(b=>b.onclick=()=>{IDI=b.dataset.l;try{localStorage.setItem('idioma',IDI)}catch(e){}traduzir();rodape();rota(true)});

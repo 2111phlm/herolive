@@ -1,6 +1,6 @@
 // Idiomas do site. Para adicionar outro: copie um bloco, traduza e crie o botão em index.html (data-l="xx").
 const I18={
-pt:{loc:'pt-BR',titulo:'⚔️ Heróis da Live',sub:'Busque seu personagem, veja seus itens e descubra como equipá-los pelo chat da live.',busca:'🔎 Digite seu nome de jogador...',
+pt:{loc:'pt-BR',t_pers:'Pesquisar personagens',d_pers:'Busque seu personagem, veja seus itens, nível e status por classe.',t_loja:'Shopping',d_loja:'Veja os itens à venda e os códigos para comprar com suas moedas.',t_drops:'Drops',d_drops:'O que cada monstro e chefe solta.',t_como:'Como jogar',d_como:'Comandos do chat, como equipar itens e como funcionam as classes.',voltar:'← Início',breveTag:'Em breve',breveMsg:'Em breve! Estamos preparando esta página.',titulo:'⚔️ Heróis da Live',sub:'Busque seu personagem, veja seus itens e descubra como equipá-los pelo chat da live.',busca:'🔎 Digite seu nome de jogador...',
  inv:'🎒 Inventário',lojaT:'🛒 Loja',lojaP:'Ganhe moedas derrotando monstros (1 por slime, 3 por goblin, 100 por chefe — para todos da partida, até os caídos). Compre pelo chat com o código do item e depois equipe.',
  ajT:'🎮 Como jogar e equipar',
  aj1:'No chat da live digite <code>sw</code> guerreiro, <code>st</code> tank, <code>sm</code> mago ou <code>sh</code> healer para entrar na partida. Digite <code>1</code> para usar sua habilidade.',
@@ -16,7 +16,7 @@ pt:{loc:'pt-BR',titulo:'⚔️ Heróis da Live',sub:'Busque seu personagem, veja
  top:'🏆 Maiores níveis',res:'🔎 Resultados',nenhum:'Nenhum jogador encontrado',nenhumQ:' com esse nome.',nenhumV:' ainda.',
  atk:'Ataque',def:'Defesa',vida:'Vida',moedas:'moedas',padrao:'padrão',tem:'✔ você já tem',
  armas:'Armas',armaduras:'Armaduras',capacetes:'Capacetes',jog:'jogadores',atual:'atualizado',erro:'Não foi possível carregar os jogadores agora.'},
-en:{loc:'en-US',titulo:'⚔️ Live Heroes',sub:'Look up your character, check your items and learn how to equip them from the live chat.',busca:'🔎 Type your player name...',
+en:{loc:'en-US',t_pers:'Find characters',d_pers:'Look up your character, items, level and stats for each class.',t_loja:'Shop',d_loja:'See the items for sale and the codes to buy them with your coins.',t_drops:'Drops',d_drops:'What each monster and boss drops.',t_como:'How to play',d_como:'Chat commands, how to equip items and how classes work.',voltar:'← Home',breveTag:'Coming soon',breveMsg:'Coming soon! We are preparing this page.',titulo:'⚔️ Live Heroes',sub:'Look up your character, check your items and learn how to equip them from the live chat.',busca:'🔎 Type your player name...',
  inv:'🎒 Inventory',lojaT:'🛒 Shop',lojaP:'Earn coins by defeating monsters (1 per slime, 3 per goblin, 100 per boss — for everyone in the run, even fallen players). Buy with the item code in chat, then equip it.',
  ajT:'🎮 How to play and equip',
  aj1:'In the live chat type <code>sw</code> warrior, <code>st</code> tank, <code>sm</code> mage or <code>sh</code> healer to join the run. Type <code>1</code> to use your skill.',
