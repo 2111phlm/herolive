@@ -436,6 +436,8 @@ function torso(cl,tm,tier,T,bob,w){if(tm.neve){torsoNeve(T,bob,w);return}const a
 
 // ---- personagem completo (origem = pés, virado para a direita). p = {d:{classe,lv},eq:{arma,armadura},h,sw,mv,cast,buff} ----
 function corpo(p,T){const cl=(p.d&&p.d.classe)||'guerreiro',e=p.eq||{},AR=e.armadura,tm=TEMAS[AR?AR.tema:'madeira']||TEMAS.madeira,tier=AR?AR.tier:1;
+ // arma e capacete têm o visual do PRÓPRIO tema (não do tema da armadura): trocar só a arma/capacete muda o desenho
+ const tmW=e.arma&&TEMAS[e.arma.tema]||tm,tierW=e.arma&&TEMAS[e.arma.tema]?e.arma.tier:tier,tmH=e.capacete&&TEMAS[e.capacete.tema]||tm;
  const h=p.h||0,pele=PELE[h%4],cab=CAB[(h>>>2)%8],mv=p.mv>0,w=mv?Math.sin(T*14):0,bob=mv?Math.abs(Math.sin(T*14))*2.2:Math.sin(T*3)*.8,sw=p.sw||0,cast=p.cast||0;
  if(tm.glow)glow(0,-26,44,tm.glow,'66');
  const b=p.buff&&p.buff.t>0?p.buff.tipo:'';
@@ -444,17 +446,17 @@ function corpo(p,T){const cl=(p.d&&p.d.classe)||'guerreiro',e=p.eq||{},AR=e.arma
  if((cl==='mago'||cl==='healer')&&!tm.neve)cabeloLongo(cab,T,bob,-19);
 
  torso(cl,tm,tier,T,bob,w);
- ctx.save();ctx.translate(0,-38-bob);ctx.scale(.82,.82);ctx.translate(0,38+bob);rosto(pele,tm.neve?'#15151f':cab,cl,bob);if(tm.neve){ctx.strokeStyle=OL;ctx.lineWidth=1.2;ctx.lineCap='round';ctx.beginPath();for(const[x,y,dx,dy]of[[-5.8,-50.2,-1.8,-1.9],[-5.4,-49,-2.4,-.6],[8.4,-50.2,1.8,-1.9],[8.2,-49,2.4,-.6]]){ctx.moveTo(x,y-bob);ctx.lineTo(x+dx,y+dy-bob)}ctx.stroke();ctx.lineCap='butt';ctx.fillStyle='rgba(244,114,182,.35)';ci(-8,-43.5-bob,3.4);ci(10,-43.5-bob,3.4)}if(tm.draco){ctx.save();ctx.globalCompositeOperation='lighter';glow(-2,-48.2-bob,7,'#ff5a00','ee');glow(6,-48.2-bob,7,'#ff5a00','ee');ctx.restore()}cobertura(cl,tm,T,bob);ctx.restore();
+ ctx.save();ctx.translate(0,-38-bob);ctx.scale(.82,.82);ctx.translate(0,38+bob);rosto(pele,tm.neve?'#15151f':cab,cl,bob);if(tm.neve){ctx.strokeStyle=OL;ctx.lineWidth=1.2;ctx.lineCap='round';ctx.beginPath();for(const[x,y,dx,dy]of[[-5.8,-50.2,-1.8,-1.9],[-5.4,-49,-2.4,-.6],[8.4,-50.2,1.8,-1.9],[8.2,-49,2.4,-.6]]){ctx.moveTo(x,y-bob);ctx.lineTo(x+dx,y+dy-bob)}ctx.stroke();ctx.lineCap='butt';ctx.fillStyle='rgba(244,114,182,.35)';ci(-8,-43.5-bob,3.4);ci(10,-43.5-bob,3.4)}if(tm.draco){ctx.save();ctx.globalCompositeOperation='lighter';glow(-2,-48.2-bob,7,'#ff5a00','ee');glow(6,-48.2-bob,7,'#ff5a00','ee');ctx.restore()}cobertura(cl,tmH,T,bob);ctx.restore();
  const shx=tm.neve?8.8:12,aw=tm.neve?5:7,conj=cl==='mago'||cl==='healer',mc=cl==='healer'?'#eef2f7':tm.cor,tr=cl==='healer'?tm.cor:tm.cor2;
  if(cl==='guerreiro'){const px=10,py=-24-bob,an=sw>0?-1.3+(1-sw)*2.8:.4;
-  ctx.save();ctx.translate(px,py);ctx.rotate(an);armaDesenho(cl,tm,tier,T,pele,cast,1);ctx.restore();
+  ctx.save();ctx.translate(px,py);ctx.rotate(an);armaDesenho(cl,tmW,tierW,T,pele,cast,1);ctx.restore();
   for(const[sx,l]of[[12,-8],[-12,4]]){const[hx_,hy_]=mao(px,py,an,0,l);braco(sx,-34-bob,hx_,hy_,pele,5.2);braco(sx+(hx_-sx)*.55,-34-bob+(hy_+34+bob)*.55,hx_,hy_,tm.cor2,6);co(hx_,hy_,3.8,pele)}}
  else if(cl==='tank'){const sx=-20+sw*16,sy=-22-bob;
   braco(-14,-34-bob,sx,sy-1,tm.cor2,6.4);
-  ctx.save();ctx.translate(sx,sy);ctx.scale(.84,.84);armaDesenho(cl,tm,tier,T,pele,cast,1);ctx.restore();
+  ctx.save();ctx.translate(sx,sy);ctx.scale(.84,.84);armaDesenho(cl,tmW,tierW,T,pele,cast,1);ctx.restore();
   const fy=-20-bob+sw*-3;braco(14,-34-bob,15,fy,tm.cor2,6.4);co(15,fy,4.8,pele);co(sx+5,-21-bob,4,pele)}
  else{const px=13,py=-24-bob,an=sw>0?-.8+(1-sw)*2:.18-cast*.5;
-  ctx.save();ctx.translate(px,py);ctx.rotate(an);armaDesenho(cl,tm,tier,T,pele,cast,1);ctx.restore();
+  ctx.save();ctx.translate(px,py);ctx.rotate(an);armaDesenho(cl,tmW,tierW,T,pele,cast,1);ctx.restore();
   const[fx_,fy_]=mao(px,py,an,0,-4);braco(shx,-34-bob,fx_,fy_,mc,aw);braco(shx+(fx_-shx)*.62,-34-bob+(fy_+34+bob)*.62,fx_,fy_,tr,aw*1.2);co(fx_,fy_,3.8,pele);
   braco(-shx,-34-bob,-shx-3.5,-21-bob*.4,mc,aw);braco(-shx-3,-24-bob*.4,-shx-3.5,-21-bob*.4,tr,aw*1.2);co(-shx-3.5,-19.5-bob*.4,3.6,pele)}
  if(tm.draco)aura(T,1);
