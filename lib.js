@@ -176,12 +176,13 @@ function trocarClasse(d,c){d.cl=d.cl||{};if(d.classe&&d.classe!==c)d.cl[d.classe
 function equipDe(d){const inv=inventarioDe(d),q=(d.equip&&d.equip[d.classe])||{};
  const melhor=s=>{const e=q[s],esc=e&&inv.find(i=>i.id===e&&i.slot===s&&i.classe===d.classe);if(esc)return esc;return inv.filter(i=>i.slot===s&&i.classe===d.classe).reduce((x,y)=>!x||pot(y)>pot(x)?y:x,undefined)};
  return{arma:melhor('arma'),armadura:melhor('armadura'),capacete:melhor('capacete')}}
-function statsDe(d){const e=equipDe(d),L=d.lv-1;return{atk:50+L+(e.arma?e.arma.atk||0:0),def:25+.5*L+(e.arma?e.arma.def||0:0)+(e.armadura?e.armadura.def||0:0)+(e.capacete?e.capacete.def||0:0),hp:250+3*L+(e.armadura?e.armadura.hp||0:0)+(e.capacete?e.capacete.hp||0:0),dl:2}}
+const ESC=10;   // escala de todos os status (jogador, itens, monstros): números maiores dão margem para o equilíbrio por faixas de poder (CP)
+function statsDe(d){const e=equipDe(d),L=d.lv-1;return{atk:ESC*(50+L)+(e.arma?e.arma.atk||0:0),def:ESC*(25+.5*L)+(e.arma?e.arma.def||0:0)+(e.armadura?e.armadura.def||0:0)+(e.capacete?e.capacete.def||0:0),hp:ESC*(250+3*L)+(e.armadura?e.armadura.hp||0:0)+(e.capacete?e.capacete.hp||0:0),dl:2}}
 const num=v=>Math.round(v*10)/10;
 // Kit básico de novato (visual padrão e simples, sempre disponível, igual para todas as classes; sem número/código). O resto do equipamento é exclusivo/especial.
 (()=>{const A={guerreiro:'Machado Simples',tank:'Maça Simples',mago:'Cajado Simples',healer:'Cetro Simples'},H={guerreiro:'Capacete de Novato',tank:'Capacete de Novato',mago:'Chapéu de Novato',healer:'Capuz de Novato'};
  for(const c of Object.keys(A)){const o={classe:c,tema:'novato',tier:1,de:1,ate:9999};
-  ITENS.push(Object.assign({id:'basico-'+c+'-arma',pasta:'armas',slot:'arma',nome:A[c]},o,c==='tank'?{atk:3,def:38}:{atk:10}),Object.assign({id:'basico-'+c+'-armadura',pasta:'armaduras',slot:'armadura',nome:'Roupa de Novato',def:5},o),Object.assign({id:'basico-'+c+'-capacete',pasta:'armaduras',slot:'capacete',nome:H[c],hp:100},o))}})();
+  ITENS.push(Object.assign({id:'basico-'+c+'-arma',pasta:'armas',slot:'arma',nome:A[c]},o,c==='tank'?{atk:3,def:25}:{atk:10}),Object.assign({id:'basico-'+c+'-armadura',pasta:'armaduras',slot:'armadura',nome:'Roupa de Novato',def:5},o),Object.assign({id:'basico-'+c+'-capacete',pasta:'armaduras',slot:'capacete',nome:H[c],hp:100},o))}})();
 
 // Desenho dos personagens por classe (usado no jogo e na tela Personagens).
 // O visual de cada faixa de 10 níveis vem de TEMAS (js/temas.js): cores, brilhos e efeitos.
@@ -475,11 +476,13 @@ function iconeItem(it,T){if(it.icone){ctx.save();ctx.translate(0,8);ctx.scale(.8
 // LOJA: itens comprados com moedas (1 moeda por slime, 3 por goblin, 100 por chefe). 5 níveis x 4 classes x (arma, armadura, capacete).
 // Comprar no chat: !bw<n> arma, !ba<n> armadura, !bh<n> capacete. Depois equipar com !ew/!ea/!eh. Números fixos: 51..110 (novos itens = números novos).
 // Armaduras: só defesa. Capacetes: só vida.
-// Tank: o "escudo" tem 25% ataque + 75% defesa, com a defesa x5 (a defesa do escudo é pequena perto da armadura).
+// Tank: o "escudo" tem 25% ataque + 75% defesa, com defesa = 75% do valor do nível (o poder de luta conta defesa em dobro, então o tank fica no mesmo patamar de CP das outras classes).
 (()=>{const CL=['guerreiro','tank','mago','healer'],TM=['ferro','ouro','diamante','celestial','cosmica'],TI=[2,4,6,8,10],
  PRECO=[1e4,1e5,1e6,1e7,1e8],ARMA=[25,50,100,200,400],DEF=[13,25,50,100,200],HP=[125,250,500,1000,2000],
  NA={guerreiro:'Machado',tank:'Escudo',mago:'Cajado',healer:'Cetro'},NR={guerreiro:'Couraça',tank:'Armadurona',mago:'Manto',healer:'Vestes'};
  CL.forEach((c,ci)=>TM.forEach((tm,t)=>{const T=TEMAS[tm],o={classe:c,tema:tm,tier:TI[t],de:9999,ate:9999,preco:PRECO[t],loja:1},P=ARMA[t];
-  ITENS.push(Object.assign({id:`loja-${c}-arma-${t+1}`,num:51+ci*15+t,pasta:'armas',slot:'arma',nome:NA[c]+' de '+T.nome},o,c==='tank'?{atk:Math.round(P*.25),def:Math.round(P*3.75)}:{atk:P}),
+  ITENS.push(Object.assign({id:`loja-${c}-arma-${t+1}`,num:51+ci*15+t,pasta:'armas',slot:'arma',nome:NA[c]+' de '+T.nome},o,c==='tank'?{atk:Math.round(P*.25),def:Math.round(P*.75)}:{atk:P}),
    Object.assign({id:`loja-${c}-armadura-${t+1}`,num:51+ci*15+5+t,pasta:'armaduras',slot:'armadura',nome:NR[c]+' de '+T.nome,def:DEF[t]},o),
    Object.assign({id:`loja-${c}-capacete-${t+1}`,num:51+ci*15+10+t,pasta:'armaduras',slot:'capacete',nome:nomeCobertura(c,T),hp:HP[t]},o))}))})();
+// Escala os status de TODOS os itens (básicos, loja e exclusivos) uma única vez, depois que tudo foi carregado
+ITENS.forEach(i=>{if(i._esc)return;i._esc=1;for(const k of['atk','def','hp'])if(i[k])i[k]=Math.round(i[k]*ESC)});
