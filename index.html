@@ -33,32 +33,34 @@ h2{margin:0 0 8px;font-size:18px}h3{margin:0 0 8px;font-size:16px}
 .it.eq{border-color:var(--ac)}.it canvas{width:64px;height:64px;display:block;margin:0 auto}
 .it code,.ajuda code{background:rgba(245,158,11,.2);padding:1px 6px;border-radius:5px;font-size:12px;font-weight:bold}
 .ajuda li{margin:6px 0}.ajuda ul{padding-left:20px;margin:6px 0}
-.nada{opacity:.7;font-size:14px}.rod{opacity:.6;font-size:12px;margin-top:16px;text-align:center}
+#idioma{display:flex;gap:6px;justify-content:flex-end;margin-bottom:6px}#idioma .chip{padding:5px 10px;font-size:13px}#idioma .chip.on{border-color:var(--ac);background:rgba(245,158,11,.18)}.nada{opacity:.7;font-size:14px}.rod{opacity:.6;font-size:12px;margin-top:16px;text-align:center}
 </style></head><body>
-<h1>⚔️ Heróis da Live</h1>
-<p class="sub">Busque seu personagem, veja seus itens e descubra como equipá-los pelo chat da live.</p>
-<input id="busca" placeholder="🔎 Digite seu nome de jogador..." autocomplete="off" autofocus>
+<div id="idioma"><button class="chip" data-l="pt">🇧🇷 Português</button><button class="chip" data-l="en">🇺🇸 English</button></div>
+<h1 data-i="titulo">⚔️ Heróis da Live</h1>
+<p class="sub" data-i="sub">Busque seu personagem, veja seus itens e descubra como equipá-los pelo chat da live.</p>
+<input id="busca" data-ip="busca" placeholder="🔎 Digite seu nome de jogador..." autocomplete="off" autofocus>
 <div class="painel" id="lista"><h2 id="lt">🏆 Maiores níveis</h2><div id="res"></div></div>
 <div class="painel" id="vista">
  <div id="ui"><div class="tabs" id="tabs"></div><h2 id="nome">—</h2><div class="moedas" id="moedas"></div><canvas id="doll" width="240" height="250"></canvas><div id="stats"></div>
   <div class="slots"><div class="slot"><canvas id="s-arma"></canvas><span id="n-arma"></span></div><div class="slot"><canvas id="s-armadura"></canvas><span id="n-armadura"></span></div><div class="slot"><canvas id="s-capacete"></canvas><span id="n-capacete"></span></div></div></div>
- <div id="inv"><h3>🎒 Inventário</h3><div id="grid"></div></div>
+ <div id="inv"><h3 data-i="inv">🎒 Inventário</h3><div id="grid"></div></div>
 </div>
-<div class="painel" id="loja"><h2>🛒 Loja</h2><p class="sub" style="margin:0 0 8px">Ganhe moedas derrotando monstros (1 por slime, 3 por goblin, 100 por chefe — para todos da partida, até os caídos). Compre pelo chat com o código do item e depois equipe.</p><div class="tabs" id="ltabs"></div><div id="lg"></div></div>
-<div class="painel ajuda"><h2>🎮 Como jogar e equipar</h2>
+<div class="painel" id="loja"><h2 data-i="lojaT">🛒 Loja</h2><p class="sub" data-i="lojaP" style="margin:0 0 8px">Ganhe moedas derrotando monstros (1 por slime, 3 por goblin, 100 por chefe — para todos da partida, até os caídos). Compre pelo chat com o código do item e depois equipe.</p><div class="tabs" id="ltabs"></div><div id="lg"></div></div>
+<div class="painel ajuda"><h2 data-i="ajT">🎮 Como jogar e equipar</h2>
 <ul>
-<li>No chat da live digite <code>sw</code> guerreiro, <code>st</code> tank, <code>sm</code> mago ou <code>sh</code> healer para entrar na partida. Digite <code>1</code> para usar sua habilidade.</li>
-<li>Cada item tem um <b>código</b> (ex.: <code>!ew45</code>). Mande esse código no chat para equipar: <code>!ew</code> = arma, <code>!ea</code> = armadura, <code>!eh</code> = capacete.</li>
-<li><b>Loja:</b> com moedas, compre pelo chat: <code>!bw51</code> compra a arma 51, <code>!ba</code> armadura e <code>!bh</code> capacete. Depois use <code>!ew51</code> (ou <code>!ea</code>/<code>!eh</code>) para equipar.</li>
-<li>Cada classe tem o seu próprio nível: se você jogar de healer só o healer evolui. Escolha a classe pelo ícone no topo do personagem.</li>
-<li><b>Passivas:</b> guerreiro e mago causam +20% de dano; o tank recebe 50% menos dano e os monstros atacam os tanks primeiro; o healer tem 10% menos de recarga na habilidade.</li>
-<li>Para voltar ao automático (o mais forte), use <code>!ew0</code>, <code>!ea0</code> ou <code>!eh0</code>.</li>
-<li>Só dá para equipar na <b>espera entre as partidas</b> ou quando seu personagem estiver <b>morto</b>.</li>
-<li>Item de outra classe não pode ser equipado — a classe de cada item aparece no card.</li>
-<li>Seu personagem é ligado ao seu perfil do TikTok: mesmo trocando o apelido, ele continua seu.</li>
+<li data-ih="aj1">No chat da live digite <code>sw</code> guerreiro, <code>st</code> tank, <code>sm</code> mago ou <code>sh</code> healer para entrar na partida. Digite <code>1</code> para usar sua habilidade.</li>
+<li data-ih="aj2">Cada item tem um <b>código</b> (ex.: <code>!ew45</code>). Mande esse código no chat para equipar: <code>!ew</code> = arma, <code>!ea</code> = armadura, <code>!eh</code> = capacete.</li>
+<li data-ih="aj3"><b>Loja:</b> com moedas, compre pelo chat: <code>!bw51</code> compra a arma 51, <code>!ba</code> armadura e <code>!bh</code> capacete. Depois use <code>!ew51</code> (ou <code>!ea</code>/<code>!eh</code>) para equipar.</li>
+<li data-ih="aj4">Cada classe tem o seu próprio nível: se você jogar de healer só o healer evolui. Escolha a classe pelo ícone no topo do personagem.</li>
+<li data-ih="aj5"><b>Passivas:</b> guerreiro e mago causam +20% de dano; o tank recebe 50% menos dano e os monstros atacam os tanks primeiro; o healer tem 10% menos de recarga na habilidade.</li>
+<li data-ih="aj6">Para voltar ao automático (o mais forte), use <code>!ew0</code>, <code>!ea0</code> ou <code>!eh0</code>.</li>
+<li data-ih="aj7">Só dá para equipar na <b>espera entre as partidas</b> ou quando seu personagem estiver <b>morto</b>.</li>
+<li data-ih="aj8">Item de outra classe não pode ser equipado — a classe de cada item aparece no card.</li>
+<li data-ih="aj9">Seu personagem é ligado ao seu perfil do TikTok: mesmo trocando o apelido, ele continua seu.</li>
 </ul></div>
 <div class="rod" id="rod"></div>
 <script src="players.js" onerror="void 0"></script>
 <script src="lib.js"></script>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body></html>
